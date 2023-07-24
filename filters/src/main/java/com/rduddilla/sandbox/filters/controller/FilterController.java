@@ -1,57 +1,55 @@
-package com.rduddilla.sandbox.filters;
+package com.rduddilla.sandbox.filters.controller;
 
 import com.rduddilla.sandbox.filters.model.Filter;
 import com.rduddilla.sandbox.filters.model.FilterNode;
-import com.rduddilla.sandbox.filters.model.enums.FilterCondition;
 import com.rduddilla.sandbox.filters.model.enums.FilterOperation;
-import com.rduddilla.sandbox.filters.model.exceptions.FilterException;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Test;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.nio.charset.Charset;
-import java.util.Random;
+import java.util.Optional;
 
-import static com.rduddilla.sandbox.filters.model.FilterNode.MAX_FILTERS;
-import static com.rduddilla.sandbox.filters.model.FilterNode.MAX_NESTED_FILTERS;
 import static com.rduddilla.sandbox.filters.model.enums.FilterCondition.AND;
 import static com.rduddilla.sandbox.filters.model.enums.FilterCondition.OR;
 import static com.rduddilla.sandbox.filters.model.enums.LongShort.LONG;
 import static com.rduddilla.sandbox.filters.model.enums.LongShort.SHORT;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@RestController
+@RequestMapping(value="api/v1/filters")
 @Slf4j
-public class FilterTest {
+public class FilterController {
 
-    @Test
-    public void testMaxFilters() throws Exception {
-        FilterNode filterNode = new FilterNode(FilterCondition.AND);
-        assertThrows(FilterException.class, () -> {
-            for (int i = 0; i <= MAX_FILTERS; i++) {
-                filterNode.addFilter(Filter.builder()
-                        .name(random_string(8, true))
-                        .operation(FilterOperation.EQUALS)
-                        .value(random_string(12, false))
-                        .build());
-            }
-        });
+    public FilterController() {
     }
 
-    @Test
-    public void testMaxNestedFilters() throws Exception {
-        FilterNode filterNode = new FilterNode(AND);
-        assertThrows(FilterException.class, () -> {
-            for (int i = 0; i <= MAX_NESTED_FILTERS; i++) {
-                filterNode.addNestedFilter(new FilterNode(AND));
-            }
-        });
+    @RequestMapping(value = "/basic", method = RequestMethod.GET)
+    public ResponseEntity<FilterNode> basicFilters() {
+        try {
+            ResponseEntity.ok(basicFilter());
+        } catch (Exception e) {
+            log.error("Error: {}", e.fillInStackTrace());
+        }
+        return ResponseEntity.of(Optional.empty());
     }
-    @Test
-    public void testSimpleFilter() throws Exception {
+
+    @RequestMapping(value = "/nested", method = RequestMethod.GET)
+    public ResponseEntity<FilterNode> nestedFilters() {
+        try {
+            ResponseEntity.ok(nestedFilter());
+        } catch (Exception e) {
+            log.error("Error: {}", e.fillInStackTrace());
+        }
+        return ResponseEntity.of(Optional.empty());
+    }
+
+    private FilterNode basicFilter() throws Exception {
         Filter filter1 = Filter.builder()
-            .name("InstrumentType")
-            .operation(FilterOperation.EQUALS)
-            .value("Stock")
-            .build();
+                .name("InstrumentType")
+                .operation(FilterOperation.EQUALS)
+                .value("Stock")
+                .build();
 
         Filter filter2 = Filter.builder()
                 .name("LongOrShort")
@@ -63,11 +61,10 @@ public class FilterTest {
         filterNode.addFilter(filter1);
         filterNode.addFilter(filter2);
 
-        log.info("Filter node: {}", filterNode);
+        return filterNode;
     }
 
-    @Test
-    public void testNestedFilter() throws Exception {
+    private FilterNode nestedFilter() throws Exception {
         Filter filter1 = Filter.builder()
                 .name("InstrumentType")
                 .operation(FilterOperation.EQUALS)
@@ -104,13 +101,6 @@ public class FilterTest {
         filterNode.addNestedFilter(filterNode1);
         filterNode.addNestedFilter(filterNode2);
 
-        log.info("Filter node: {}", filterNode);
-    }
-
-    private String random_string(int length, boolean upper) {
-        byte[] array = new byte[length]; // length is bounded by 7
-        new Random().nextBytes(array);
-        String random = new String(array, Charset.forName("UTF-8"));
-        return upper ? random.toUpperCase() : random;
+        return filterNode;
     }
 }
