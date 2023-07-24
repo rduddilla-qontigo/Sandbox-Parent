@@ -2,11 +2,13 @@ package com.rduddilla.sandbox.filters.model;
 
 import com.rduddilla.sandbox.filters.model.enums.FilterCondition;
 import com.rduddilla.sandbox.filters.model.exceptions.FilterException;
+import lombok.Getter;
 import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 @ToString
 public class FilterNode {
 

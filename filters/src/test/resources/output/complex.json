@@ -1,0 +1,47 @@
+{
+  "condition": "OR",
+  "filters": [
+    {
+      "name": "InstrumentType",
+      "operation": "CONTAINS",
+      "value": [
+        "Swap",
+        "Stock"
+      ]
+    }
+  ],
+  "nestedFilters": [
+    {
+      "condition": "AND",
+      "filters": [
+        {
+          "name": "InstrumentType",
+          "operation": "EQUALS",
+          "value": "Stock"
+        },
+        {
+          "name": "LongOrShort",
+          "operation": "EQUALS",
+          "value": "LONG"
+        }
+      ],
+      "nestedFilters": []
+    },
+    {
+      "condition": "AND",
+      "filters": [
+        {
+          "name": "InstrumentType",
+          "operation": "EQUALS",
+          "value": "Swap"
+        },
+        {
+          "name": "LongOrShort",
+          "operation": "EQUALS",
+          "value": "SHORT"
+        }
+      ],
+      "nestedFilters": []
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "condition": "AND",
+  "filters": [
+    {
+      "name": "InstrumentType",
+      "operation": "EQUALS",
+      "value": "Stock"
+    },
+    {
+      "name": "LongOrShort",
+      "operation": "EQUALS",
+      "value": "LONG"
+    }
+  ],
+  "nestedFilters": []
+}
